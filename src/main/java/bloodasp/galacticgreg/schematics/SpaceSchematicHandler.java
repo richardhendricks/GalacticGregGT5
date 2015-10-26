@@ -12,10 +12,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
 
-import net.minecraft.util.Vec3;
 import bloodasp.galacticgreg.GalacticGreg;
-import bloodasp.galacticgreg.api.Enums.SpaceObjectType;
-import bloodasp.galacticgreg.api.StructureInformation;
 
 /**
  * Class for XML Structure files. You only should edit/use this file/class if you want to add/fix stuff with 
@@ -27,18 +24,18 @@ public class SpaceSchematicHandler {
 	File _mConfigFolderName;
 	File _mSchematicsFolderName;
 	private List<SpaceSchematic> _mSpaceSchematics;
-	
+
 	public SpaceSchematicHandler(File pConfigFolder)
 	{
 		_mConfigFolderName = new File(String.format("%s/%s", pConfigFolder.toString(), GalacticGreg.NICE_MODID));
 		_mSchematicsFolderName = new File(String.format("%s/schematics", _mConfigFolderName));
 
 		_mSpaceSchematics = new ArrayList<SpaceSchematic>();
-		
+
 		if (!_mSchematicsFolderName.exists())
 			_mSchematicsFolderName.mkdirs();
 	}
-	
+
 	/** Get a random schematic to be placed.
 	 * @return A schematic that can be spawned in space
 	 */
@@ -47,13 +44,13 @@ public class SpaceSchematicHandler {
 		int tRandomChance = GalacticGreg.GalacticRandom.nextInt(100);
 		List<Integer> tRandomIDs = new ArrayList<Integer>();
 		SpaceSchematic tChoosenSchematic = null;
-		
+
 		if (_mSpaceSchematics == null)
 			return null;
-		
+
 		if (_mSpaceSchematics.size() == 0)
 			return null;
-		
+
 		if (_mSpaceSchematics.size() == 1)
 		{
 			tChoosenSchematic = _mSpaceSchematics.get(0);
@@ -68,16 +65,16 @@ public class SpaceSchematicHandler {
 					tRandomIDs.add(i);
 			}
 		}
-		
+
 		if (tRandomIDs.size() > 0)
 		{
 			int tRnd = GalacticGreg.GalacticRandom.nextInt(tRandomIDs.size());
 			tChoosenSchematic = _mSpaceSchematics.get(tRandomIDs.get(tRnd));
 		}
-		
+
 		return tChoosenSchematic;
 	}
-	
+
 	/**
 	 * Try to reload the schematics. Will not change the list of currently loaded schematics if any errors
 	 * are detected, except if you force it to do so
@@ -90,10 +87,10 @@ public class SpaceSchematicHandler {
 			Collection<File> structureFiles = FileUtils.listFiles(_mSchematicsFolderName, new String[] {"xml"}, false);
 			List<SpaceSchematic> tNewSpaceSchematics = new ArrayList<SpaceSchematic>();
 			int tErrorsFound = 0;
-			
+
 			if (structureFiles.isEmpty())
 				return true;
-			
+
 			for (File tSchematic : structureFiles)
 			{
 				try
@@ -113,12 +110,12 @@ public class SpaceSchematicHandler {
 					e.printStackTrace();
 					continue;
 				}
-				
+
 			}
-			
+
 			GalacticGreg.Logger.info("Successfully loaded %d Schematics", tNewSpaceSchematics.size());
 			boolean tDoReplace = true;
-			
+
 			if(tErrorsFound > 0)
 			{
 				GalacticGreg.Logger.warn("Found %d errors while loading, not all schematics will be available");
@@ -130,10 +127,10 @@ public class SpaceSchematicHandler {
 					tDoReplace = false;
 				}
 			}
-			
+
 			if(tDoReplace)
 				_mSpaceSchematics = tNewSpaceSchematics;
-			
+
 			return true;
 		}
 		catch(Exception e)
@@ -142,7 +139,7 @@ public class SpaceSchematicHandler {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Saves the schematic to disk. The schematics name will be used as filename
 	 * @param pSchematic
@@ -154,7 +151,7 @@ public class SpaceSchematicHandler {
 		{
 			if (pSchematic.getName().length() < 1)
 				return false;
-			
+
 			JAXBContext tJaxbCtx = JAXBContext.newInstance(SpaceSchematic.class);
 			Marshaller jaxMarsh = tJaxbCtx.createMarshaller();
 			jaxMarsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true); 
@@ -166,7 +163,7 @@ public class SpaceSchematicHandler {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Load a schematic from disk by the schematic-name itself, without .xml or path
 	 * @param pSchematicName
@@ -176,7 +173,7 @@ public class SpaceSchematicHandler {
 	{
 		return LoadSpaceSchematic(new File(String.format("%s/%s.xml", _mSchematicsFolderName, pSchematicName)));
 	}
-	
+
 	/**
 	 * Load a schematic file from disk by providing the actual file-object
 	 * @param pName
@@ -185,7 +182,7 @@ public class SpaceSchematicHandler {
 	public SpaceSchematic LoadSpaceSchematic(File pName)
 	{
 		SpaceSchematic tSchematic = null;
-		
+
 		try {
 			JAXBContext tJaxbCtx = JAXBContext.newInstance(SpaceSchematic.class);
 			if (!pName.exists())
@@ -193,14 +190,14 @@ public class SpaceSchematicHandler {
 				GalacticGreg.Logger.error("SchematicFile %s could not be found", pName);
 				return null;
 			}
-			
+
 			Unmarshaller jaxUnmarsh = tJaxbCtx.createUnmarshaller();
 			tSchematic = (SpaceSchematic) jaxUnmarsh.unmarshal(pName);
-				
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		 
+
 		return tSchematic;
 	}
 }

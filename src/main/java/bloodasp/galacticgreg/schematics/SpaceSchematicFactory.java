@@ -1,13 +1,12 @@
 package bloodasp.galacticgreg.schematics;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 import bloodasp.galacticgreg.api.Enums.AllowedBlockPosition;
 import bloodasp.galacticgreg.api.Enums.TargetBlockPosition;
 import bloodasp.galacticgreg.api.SpecialBlockComb;
 import bloodasp.galacticgreg.api.StructureInformation;
-import bloodasp.galacticgreg.schematics.SpaceSchematic.BaseStructureInfo;
 
 /**
  * Class for XML Structure files. You only should edit/use this file/class if you want to add/fix stuff with 
@@ -22,13 +21,13 @@ public class SpaceSchematicFactory {
 		tSchem._mStructureName = pName;
 		tSchem._mRarity = 100;
 		tSchem._mStructureEnabled = false;
-		
+
 		return tSchem;
 	}
 
-	public static StructureInformation createStructureInfo(int pX, int pY, int pZ, Block pBlock, int pMeta)
+	public static StructureInformation createStructureInfo(int pX, int pY, int pZ, Block pBlock, int pMeta, NBTTagCompound pNBTCompound)
 	{
-		StructureInformation si = new StructureInformation(Vec3.createVectorHelper(pX, pY, pZ), TargetBlockPosition.Invalid, new SpecialBlockComb(pBlock, pMeta, AllowedBlockPosition.AsteroidCoreAndShell));
+		StructureInformation si = new StructureInformation(Vec3.createVectorHelper(pX, pY, pZ), TargetBlockPosition.Invalid, new SpecialBlockComb(pBlock, pMeta, AllowedBlockPosition.AsteroidCoreAndShell), pNBTCompound);
 		return si;
 	}
 }

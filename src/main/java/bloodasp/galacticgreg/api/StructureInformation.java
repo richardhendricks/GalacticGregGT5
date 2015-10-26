@@ -1,6 +1,7 @@
 package bloodasp.galacticgreg.api;
 
 import bloodasp.galacticgreg.api.Enums.TargetBlockPosition;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 
 /**
@@ -10,6 +11,7 @@ public class StructureInformation {
 	private Vec3 _mCoordinates;
 	private TargetBlockPosition _mBlockPosition;
 	private BlockMetaComb _mBlockMetaComb;
+	private NBTTagCompound _mNBT;
 	
 	public TargetBlockPosition getBlockPosition()
 	{
@@ -52,9 +54,23 @@ public class StructureInformation {
 	 * @param pTargetBlock The target block in question
 	 */
 	public StructureInformation(Vec3 pCoordinates, TargetBlockPosition pPosition, BlockMetaComb pTargetBlock) {
+		this(pCoordinates, pPosition, pTargetBlock, null);
+	}
+
+	/**
+	 * Init StructureInfo with Coords, block position and a populated block/meta info
+	 * @param pCoordinates The coords in question
+	 * @param pPosition The position-enum value
+	 * @param pTargetBlock The target block in question
+	 */
+	public StructureInformation(Vec3 pCoordinates, TargetBlockPosition pPosition, BlockMetaComb pTargetBlock, NBTTagCompound pNBT) {
 		_mCoordinates = pCoordinates;
 		_mBlockPosition = pPosition;
 		_mBlockMetaComb = pTargetBlock;
+		_mNBT = pNBT;
 	}
 
+	public NBTTagCompound getNBTCompound() {
+		return _mNBT;
+	}
 }

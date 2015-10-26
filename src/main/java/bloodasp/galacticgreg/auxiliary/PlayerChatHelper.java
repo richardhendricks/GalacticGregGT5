@@ -24,6 +24,18 @@ public class PlayerChatHelper {
 
 	/**
 	 * Meant for notifications that are being send to an admin/op
+	 * No color will be applied
+	 * @param pPlayer
+	 * @param pMessage
+	 */
+	public static void SendNeutral(ICommandSender pCommandSender, String pMessage)
+	{
+		pCommandSender.addChatMessage(new ChatComponentText(pMessage));
+	}
+
+	
+	/**
+	 * Meant for notifications that are being send to an admin/op
 	 * Color will be RED
 	 * @param pPlayer
 	 * @param pMessage

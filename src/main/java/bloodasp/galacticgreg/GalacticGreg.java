@@ -1,7 +1,5 @@
 package bloodasp.galacticgreg;
 
-import gregtech.api.GregTech_API;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,11 +7,11 @@ import java.util.Random;
 import bloodasp.galacticgreg.auxiliary.GalacticGregConfig;
 import bloodasp.galacticgreg.auxiliary.LogHelper;
 import bloodasp.galacticgreg.auxiliary.ProfilingStorage;
+import bloodasp.galacticgreg.command.AESpawnCommand;
 import bloodasp.galacticgreg.command.AEStorageCommand;
 import bloodasp.galacticgreg.command.ProfilingCommand;
+import bloodasp.galacticgreg.command.StructReloadCommand;
 import bloodasp.galacticgreg.registry.GalacticGregRegistry;
-import bloodasp.galacticgreg.schematics.SpaceSchematic;
-import bloodasp.galacticgreg.schematics.SpaceSchematicFactory;
 import bloodasp.galacticgreg.schematics.SpaceSchematicHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -29,7 +27,7 @@ public class GalacticGreg {
 
 	public static final String NICE_MODID = "GalacticGreg";
 	public static final String MODID = "galacticgreg";
-	
+
 	public static final String VERSION = "GRADLETOKEN_VERSION";
 
 	public static final LogHelper Logger = new LogHelper(NICE_MODID);
@@ -37,9 +35,9 @@ public class GalacticGreg {
 	public static SpaceSchematicHandler SchematicHandler;
 
 	public static Random GalacticRandom = null;
-	
+
 	public static GalacticGregConfig GalacticConfig = null;
-	
+
 	/**
 	 * Preload phase. Read config values and set various features.. n stuff... 
 	 * @param aEvent
@@ -49,11 +47,11 @@ public class GalacticGreg {
 		GalacticConfig = new GalacticGregConfig(aEvent.getModConfigurationDirectory(), NICE_MODID, NICE_MODID);
 		if (!GalacticConfig.LoadConfig())
 			GalacticGreg.Logger.warn("Something went wrong while reading GalacticGregs config file. Things will be wonky..");
-		
+
 		if (GalacticConfig.ProperConfigured)
 		{
 			GalacticRandom = new Random(System.currentTimeMillis());
-			
+
 			if (GalacticConfig.SchematicsEnabled)
 				SchematicHandler = new SpaceSchematicHandler(aEvent.getModConfigurationDirectory());			
 		}
@@ -62,7 +60,7 @@ public class GalacticGreg {
 
 		Logger.trace("Leaving PRELOAD");
 	}
-	
+
 	/**
 	 * Postload phase. Mods can add their custom definition to our api in their own PreLoad or Init-phase
 	 * Once GalacticGregRegistry.InitRegistry() is called, no changes are accepted.
@@ -77,19 +75,19 @@ public class GalacticGreg {
 			ModRegisterer atc = new ModRegisterer();
 			if (atc.Init())
 				atc.Register();
-			
+
 			if (!GalacticGregRegistry.InitRegistry())
 				throw new RuntimeException("GalacticGreg registry has been finalized from a 3rd-party mod, this is forbidden!");
-		
+
 			new WorldGenGaGT().run();
-			
+
 			GalacticConfig.serverPostInit();
 		}		
 		else
 			GalacticGreg.Logger.error("GalacticGreg will NOT continue to load. Please read the warnings and configure your config file!");
 		Logger.trace("Leaving POSTLOAD");
 	}
-	
+
 	/**
 	 * If oregen profiling is enabled, then register the command
 	 * @param pEvent
@@ -102,9 +100,13 @@ public class GalacticGreg {
 		{
 			if (GalacticConfig.ProfileOreGen)
 				pEvent.registerServerCommand(new ProfilingCommand());
-			
+
 			if (Loader.isModLoaded("appliedenergistics2") && GalacticConfig.EnableAEExportCommand && GalacticConfig.SchematicsEnabled)
+			{
 				pEvent.registerServerCommand(new AEStorageCommand());
+				pEvent.registerServerCommand(new AESpawnCommand());
+				pEvent.registerServerCommand(new StructReloadCommand());
+			}
 		}
 		Logger.trace("Leaving SERVERLOAD");
 	}
